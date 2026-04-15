@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Od chaosu ke kontrole — Adam Bárta</title>
+<style>
+:root {
+  --orange: #ff7530;
+  --orange-dark: #e55a18;
+  --orange-light: #ffe8d4;
+  --orange-pale: #fff5ed;
+  --dark: #1a1208;
+  --mid: #5c3a1e;
+  --muted: #9c7060;
+  --border: #f0d8c4;
+  --white: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Trebuchet MS', 'Helvetica Neue', Arial, sans-serif;
+  background-color: var(--orange-pale);
+  background-image:
+    linear-gradient(rgba(255,169,113,0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,169,113,0.25) 1px, transparent 1px);
+  background-size: 80px 80px;
+  color: var(--dark);
+  width: 700px;
+  margin: 0 auto;
+}
+
+.top-bar {
+  background: var(--orange);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 24px;
+}
+.top-bar .brand { font-weight: 800; font-size: 13px; color: white; letter-spacing: 0.05em; }
+.top-bar .web { font-size: 11px; color: rgba(255,255,255,0.85); }
+
+.hero {
+  background: var(--dark);
+  padding: 36px 24px 32px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '5';
+  position: absolute;
+  right: -10px;
+  top: -20px;
+  font-size: 200px;
+  font-weight: 800;
+  color: rgba(255,117,48,0.08);
+  line-height: 1;
+}
+.hero h1 {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--orange);
+  line-height: 1.05;
+  margin-bottom: 10px;
+  position: relative;
+}
+.hero p {
+  font-size: 13px;
+  color: var(--orange-light);
+  line-height: 1.6;
+  max-width: 440px;
+  position: relative;
+}
+
+.stats {
+  background: var(--orange);
+  display: flex;
+  padding: 12px 24px;
+}
+.stat {
+  flex: 1;
+  text-align: center;
+  color: white;
+  border-right: 1px solid rgba(255,255,255,0.2);
+  padding: 4px 0;
+}
+.stat:last-child { border-right: none; }
+.stat .n { font-size: 20px; font-weight: 800; display: block; line-height: 1.1; }
+.stat .l { font-size: 10px; opacity: 0.8; }
+
+.steps { padding: 20px 24px; display: flex; flex-direction: column; gap: 14px; }
+
+.step {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(26,18,8,0.05);
+}
+
+.step-header { display: flex; align-items: stretch; }
+
+.step-num {
+  background: var(--orange);
+  width: 52px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 14px 0;
+}
+.step-num .n { font-size: 24px; font-weight: 800; color: white; line-height: 1; }
+.step-num .o { font-size: 9px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+.step-title {
+  background: var(--orange-pale);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  flex: 1;
+}
+.step-title h2 { font-size: 15px; font-weight: 800; color: var(--orange); line-height: 1.2; }
+.step-title .sub { font-size: 11px; color: var(--mid); margin-top: 2px; }
+
+.step-body { padding: 14px 16px; }
+
+.quote {
+  font-style: italic;
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: 600;
+  border-left: 3px solid var(--orange);
+  padding: 8px 0 8px 12px;
+  margin-bottom: 14px;
+  background: var(--orange-pale);
+  border-radius: 0 4px 4px 0;
+  line-height: 1.5;
+}
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.sl {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+ul.checklist { list-style: none; }
+ul.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 11.5px;
+  color: var(--dark);
+  line-height: 1.4;
+}
+ul.checklist li:last-child { border-bottom: none; }
+.chk {
+  width: 14px; height: 14px;
+  border: 1.5px solid var(--orange);
+  border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+}
+.chk::after { content: '✓'; font-size: 8px; color: var(--orange); font-weight: 800; }
+
+ul.tips { list-style: none; }
+ul.tips li {
+  display: flex; gap: 6px; padding: 5px 0;
+  font-size: 11.5px; color: var(--mid); line-height: 1.4;
+  border-bottom: 1px solid var(--border);
+}
+ul.tips li:last-child { border-bottom: none; }
+ul.tips li::before { content: '→'; color: var(--orange); font-weight: 700; flex-shrink: 0; }
+
+.pillars { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin: 10px 0; }
+.pillar {
+  background: var(--orange-pale); border: 1px solid var(--border);
+  border-top: 2.5px solid var(--orange); border-radius: 4px; padding: 8px 6px; text-align: center;
+}
+.pillar .pt { font-size: 9px; font-weight: 700; color: var(--orange); margin-bottom: 3px; }
+.pillar .pi { font-size: 10px; color: var(--mid); }
+
+.eco { display: flex; gap: 8px; padding: 5px 0; font-size: 11px; border-bottom: 1px solid var(--border); align-items: baseline; }
+.eco:last-child { border-bottom: none; }
+.eco .el { color: var(--orange); font-weight: 700; min-width: 80px; font-size: 10px; flex-shrink: 0; }
+
+.cascade { display: flex; flex-direction: column; gap: 4px; }
+.ci { padding: 7px 12px; border-radius: 5px; font-size: 11.5px; }
+.ci.o { background: var(--orange); color: white; }
+.ci.c { background: var(--orange-pale); border: 1px solid var(--border); }
+.ci .ct { font-weight: 700; }
+.ci .cd { font-size: 10px; opacity: 0.8; margin-top: 1px; }
+
+.principle { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.principle:last-child { border-bottom: none; }
+.pn {
+  background: var(--orange); color: white; font-weight: 800; font-size: 11px;
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.pt3 { font-size: 11.5px; font-weight: 700; color: var(--dark); }
+.pd { font-size: 11px; color: var(--mid); margin-top: 2px; line-height: 1.4; }
+
+.review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px; }
+.review-box { background: var(--orange-pale); border: 1px solid var(--border); border-radius: 6px; padding: 10px; }
+.rbt { font-size: 11px; font-weight: 700; color: var(--orange); margin-bottom: 8px; }
+
+.action { background: var(--orange); margin: 0 24px 14px; border-radius: 8px; padding: 20px; }
+.action h2 { font-size: 16px; font-weight: 800; color: white; margin-bottom: 4px; }
+.action .sq { font-size: 11px; color: rgba(255,255,255,0.8); font-style: italic; margin-bottom: 14px; }
+.action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.action-step { background: rgba(255,255,255,0.15); border-radius: 6px; padding: 10px; display: flex; gap: 8px; align-items: flex-start; }
+.an { background: white; color: var(--orange); font-weight: 800; font-size: 11px; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.at { font-size: 12px; font-weight: 700; color: white; }
+.ad { font-size: 10.5px; color: rgba(255,255,255,0.85); margin-top: 2px; line-height: 1.4; }
+
+.reset { margin: 0 24px 14px; background: white; border: 1px solid var(--border); border-left: 4px solid var(--orange); border-radius: 8px; padding: 16px 18px; }
+.reset h3 { font-size: 13px; font-weight: 800; color: var(--orange); margin-bottom: 4px; }
+.reset p { font-size: 11px; color: var(--mid); margin-bottom: 12px; }
+.reset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.reset-item { display: flex; gap: 6px; font-size: 11.5px; color: var(--mid); align-items: flex-start; }
+.reset-item::before { content: '☐'; color: var(--orange); font-size: 13px; flex-shrink: 0; line-height: 1.2; }
+
+.qbar { background: var(--dark); color: var(--orange); text-align: center; padding: 14px 24px; font-size: 12px; font-style: italic; font-weight: 600; line-height: 1.6; }
+.bottom { background: var(--orange); color: white; text-align: center; padding: 10px 24px; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <span class="brand">ADAM BÁRTA</span>
+  <span class="web">adambarta.cz | adam@adambarta.cz</span>
+</div>
+
+<div class="hero">
+  <h1>OD CHAOSU<br>KE KONTROLE</h1>
+  <p>5 kroků jak zavést osobní produktivitu do praxe. Checklist + tipy — rovnou použitelné.</p>
+</div>
+
+<div class="stats">
+  <div class="stat"><span class="n">5</span><span class="l">kroků k zavedení</span></div>
+  <div class="stat"><span class="n">2×</span><span class="l">týdenní review</span></div>
+  <div class="stat"><span class="n">70 %</span><span class="l">plánovaná kapacita</span></div>
+  <div class="stat"><span class="n">1</span><span class="l">systém, který funguje</span></div>
+</div>
+
+<div class="steps">
+
+  <!-- 1 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num"><span class="n">1</span><span class="o">z 5</span></div>
+      <div class="step-title">
+        <h2>VIZE — Nejdřív si ujasni, kam míříš</h2>
+        <div class="sub">Bez jasného cíle děláš věci, které tě nikam neposouvají.</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="quote">"Efektivita není o tom dělat věci rychle. Je o tom dělat správné věci."</div>
+      <div class="two-col">
+        <div>
+          <div class="sl">Checklist — udělej to</div>
+          <ul class="checklist">
+            <li><span class="chk"></span>Zapiš si, proč jsi vůbec začal podnikat</li>
+            <li><span class="chk"></span>Definuj max. 3 cíle na tento kvartál</li>
+            <li><span class="chk"></span>Jednou měsíčně si sedni sám se sebou a zhodnoť</li>
+            <li><span class="chk"></span>U každé aktivity se ptej: posouvá mě to k cíli?</li>
+          </ul>
+        </div>
+        <div>
+          <div class="sl">Jak na to v praxi</div>
+          <ul class="tips">
+            <li>Vizi napiš na papír — max. 3 věty. Kratší = jasnější.</li>
+            <li>Čím méně cílů, tím lépe. Fokus je vzácný.</li>
+            <li>Co nesměřuje k tvým cílům — odlož nebo smaž.</li>
+            <li>Pravidelná reflexe = přestaneš se točit v kruhu.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num"><span class="n">2</span><span class="o">z 5</span></div>
+      <div class="step-title">
+        <h2>SYSTÉM — Dostaň vše z hlavy ven</h2>
+        <div class="sub">Hlava je na přemýšlení, ne na skladování úkolů a nápadů.</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="quote">"Cokoliv ti leží v hlavě, bere ti mentální kapacitu. Dostaň to ven — okamžitě."</div>
+      <div class="two-col">
+        <div>
+          <div class="sl">Checklist — udělej to</div>
+          <ul class="checklist">
+            <li><span class="chk"></span>Vyber si JEDNO místo na úkoly a drž se ho</li>
+            <li><span class="chk"></span>Vyber si JEDEN zápisník na myšlenky a nápady</li>
+            <li><span class="chk"></span>Používej JEDEN kalendář pro práci i soukromí</li>
+            <li><span class="chk"></span>Každý nápad, úkol nebo starost zapiš okamžitě</li>
+            <li><span class="chk"></span>Každý pátek projdi nápady a rozhodni o dalším kroku</li>
+          </ul>
+          <div class="pillars">
+            <div class="pillar"><div class="pt">ÚKOLY</div><div class="pi">Todoist / TickTick / Freelo</div></div>
+            <div class="pillar"><div class="pt">POZNÁMKY</div><div class="pi">Apple Notes / Notion / Keep</div></div>
+            <div class="pillar"><div class="pt">KALENDÁŘ</div><div class="pi">Google / Apple — jen jeden</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="sl">Jak na to v praxi</div>
+          <ul class="tips">
+            <li>Méně nástrojů = více přehledu. Neztrať se ve výběru.</li>
+            <li>Zvol si 3 základní nástroje a minimálně půl roku je neměň.</li>
+            <li>Co není zapsané, neexistuje. Ani sebevětší záměr.</li>
+            <li>Páteční review: je to relevantní? Ne → smaž. Ano → zaplánuj.</li>
+          </ul>
+          <br>
+          <div class="sl">Příklad ekosystému</div>
+          <div class="eco"><span class="el">Soukromí:</span><span>Apple Poznámky + Připomínky</span></div>
+          <div class="eco"><span class="el">Podnikání:</span><span>Freelo — úkoly, projekty, tým</span></div>
+          <div class="eco"><span class="el">Komunikace:</span><span>Google — Kalendář, Disk, Meet</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num"><span class="n">3</span><span class="o">z 5</span></div>
+      <div class="step-title">
+        <h2>RYTMUS — Plánuj od velkého k malému</h2>
+        <div class="sub">Velké cíle se nestávají samy. Rozlož je na kroky a dej jim čas v kalendáři.</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="quote">"Raději 3 projekty dotáhnuté na 100 % než 10 projektů, které nikdy neskončí."</div>
+      <div class="two-col">
+        <div>
+          <div class="sl">Kaskáda plánování</div>
+          <div class="cascade">
+            <div class="ci o"><div class="ct">ROČNÍ VIZE</div><div class="cd">Kam chci za rok být? Co chci dokázat?</div></div>
+            <div class="ci c" style="margin-left:16px"><div class="ct">KVARTÁLNÍ CÍLE</div><div class="cd">Max. 3 cíle. Čím méně, tím lépe.</div></div>
+            <div class="ci o" style="margin-left:32px"><div class="ct">TÝDENNÍ PLÁN</div><div class="cd">Zablokuj si čas na plnění cílů.</div></div>
+            <div class="ci c" style="margin-left:48px"><div class="ct">DENNÍ AGENDA</div><div class="cd">Max. 70 % kapacity. Zbytek je život.</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="sl">Checklist — udělej to</div>
+          <ul class="checklist">
+            <li><span class="chk"></span>Napiš si max. 3 kvartální cíle</li>
+            <li><span class="chk"></span>Každý týden v neděli naplánuj příští týden</li>
+            <li><span class="chk"></span>Blokuj si čas na důležité úkoly v kalendáři</li>
+            <li><span class="chk"></span>Plánuj jen 70 % kapacity — zbytek je pro nečekané</li>
+          </ul>
+          <br>
+          <div class="sl">Jak na to v praxi</div>
+          <ul class="tips">
+            <li>Co nemá čas v kalendáři, se nestane. Prostě ne.</li>
+            <li>Nedoplánovaný týden = reaktivní týden plný požárů.</li>
+            <li>Víkendy jsou na odpočinek, ne na dohánění práce.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num"><span class="n">4</span><span class="o">z 5</span></div>
+      <div class="step-title">
+        <h2>REALIZACE — Chraň si energii a fokus</h2>
+        <div class="sub">Sebelepší plán bez energie a soustředění nefunguje.</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="quote">"Produktivita není o pracování více hodin. Je o práci ve správný čas s plnou energií."</div>
+      <div class="principle">
+        <div class="pn">1</div>
+        <div>
+          <div class="pt3">ENERGIE JE NA PRVNÍM MÍSTĚ</div>
+          <div class="pd">Naplánuj si spánek, pohyb, jídlo a čas s rodinou jako nejdůležitější aktivity — ne jako zbytky dne. Pokud musíš škrtat, je něco špatně v systému.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="pn">2</div>
+        <div>
+          <div class="pt3">DELEGUJ NEBO AUTOMATIZUJ</div>
+          <div class="pd">Před každým úkolem se zeptej: musím to dělat právě já? Pokud ne — deleguj. Dělá se to opakovaně? Automatizuj a uvolni si kapacitu.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="pn">3</div>
+        <div>
+          <div class="pt3">CHRAŇ SI ČAS NA HLUBOKOU PRÁCI</div>
+          <div class="pd">Nejdůležitější úkoly dělej dopoledne 9–12, kdy máš nejvíce energie. Zapni režim nerušit — žádné notifikace, zprávy ani volání. Přerušení stojí 15 minut soustředění.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="pn">4</div>
+        <div>
+          <div class="pt3">CO JE V KALENDÁŘI, TO SE STANE</div>
+          <div class="pd">Každý projekt a každá důležitá aktivita musí mít časové okno v kalendáři. Plánuj kapacitu na 70–80 % — zbytek je pro nečekané věci a živý život.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num"><span class="n">5</span><span class="o">z 5</span></div>
+      <div class="step-title">
+        <h2>ZPĚTNÁ VAZBA — Reviduj a zlepšuj systém</h2>
+        <div class="sub">Systém bez pravidelné údržby se rozpadne. Revize tě vrací do role stratéga.</div>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="quote">"Týdenní review není administrativa. Je to chvíle, kdy přestaneš hasit a začneš řídit."</div>
+      <div class="review-grid">
+        <div class="review-box">
+          <div class="rbt">📅 Páteční review (30 min)</div>
+          <ul class="checklist">
+            <li><span class="chk"></span>Projdi všechny myšlenky a nápady</li>
+            <li><span class="chk"></span>Rozhodni: smazat, delegovat nebo naplánovat</li>
+            <li><span class="chk"></span>Co se tento týden povedlo?</li>
+            <li><span class="chk"></span>Co jsem nestihl a proč?</li>
+          </ul>
+        </div>
+        <div class="review-box">
+          <div class="rbt">🌙 Nedělní review (20 min)</div>
+          <ul class="checklist">
+            <li><span class="chk"></span>Projdi kalendář na příští týden</li>
+            <li><span class="chk"></span>Zkontroluj úkoly a jejich priority</li>
+            <li><span class="chk"></span>Mám dost prostoru pro hlubokou práci?</li>
+            <li><span class="chk"></span>Co jsou moje 3 nejdůležitější věci příští týden?</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ACTION -->
+<div class="action">
+  <h2>PRVNÍ KROK — Začni dnes večer</h2>
+  <div class="sq">"Nepotřebuješ dokonalý systém. Potřebuješ začít."</div>
+  <div class="action-grid">
+    <div class="action-step">
+      <div class="an">1</div>
+      <div><div class="at">Braindump</div><div class="ad">Zapiš absolutně vše co ti leží v hlavě. Úkoly, starosti, nápady. Bez cenzury.</div></div>
+    </div>
+    <div class="action-step">
+      <div class="an">2</div>
+      <div><div class="at">Vyber nástroje</div><div class="ad">Rozhodni se: 1 úkolovník, 1 zápisník, 1 kalendář. Nic víc.</div></div>
+    </div>
+    <div class="action-step">
+      <div class="an">3</div>
+      <div><div class="at">Vyber 3 priority</div><div class="ad">Z celého seznamu vyber 3 nejdůležitější věci na zítřek. Jen tři.</div></div>
+    </div>
+    <div class="action-step">
+      <div class="an">4</div>
+      <div><div class="at">Dej je do kalendáře</div><div class="ad">Zablokuj si na ně konkrétní čas. Co je v kalendáři, to se stane.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- RESET -->
+<div class="reset">
+  <h3>KDY SE SYSTÉM ROZPADNE — Reset protokol</h3>
+  <p>Nemoc, dovolená, krize v podnikání — to je normální. Klíčové je vědět, jak se vrátit. Neobviňuj se — vrať se k systému.</p>
+  <div class="reset-grid">
+    <div class="reset-item">Odpusť si — nestíháš, to je v pořádku</div>
+    <div class="reset-item">Braindump — dostaň vše z hlavy na papír</div>
+    <div class="reset-item">Radikálně škrtej: smaž, deleguj, odsuň</div>
+    <div class="reset-item">Vrať se k pohybu a ranní rutině</div>
+    <div class="reset-item">Naplánuj si revizi — i kdyby na 15 minut</div>
+    <div class="reset-item">Jeden malý krok dnes. Zbytek zítra.</div>
+  </div>
+</div>
+
+<div class="qbar">
+  "Pořádek v systému = klid v hlavě."<br>
+  Když zvládneš řídit sebe, zvládneš řídit i svůj byznys.
+</div>
+<div class="bottom">
+  Webinář: Přestaň hasit požáry. Začni řídit svůj čas. &nbsp;|&nbsp; adambarta.cz &nbsp;|&nbsp; Komunita zdarma: Digital Mastermind
+</div>
+
+</body>
+</html>
